@@ -1,0 +1,23 @@
+apply plugin: 'maven'
+
+import org.gradle.api.internal.artifacts.publish.DefaultPublishArtifact
+
+artifacts{
+    archives new DefaultPublishArtifact("asan-client", "jar", "jar", null, new Date(), new File("build/intermediates/bundles/release/classes.jar"))
+}
+
+uploadArchives {
+    repositories.mavenDeployer {
+        name = 'mavenCentralReleaseDeployer'
+        repository(url: "http://maven.app.com/nexus/content/repositories/asan") {
+            authentication(userName: "name", password: "password")
+        }
+        addFilter("asan-client") {artifact, file ->
+            artifact.name == "asan-client"
+        }
+        pom("asan-client").packaging = 'jar'
+        pom("asan-client").groupId = "cn.mutils.app.asan"
+        pom("asan-client").artifactId = "asan-client"
+        pom("asan-client").version = "1.0.0"
+    }
+}
